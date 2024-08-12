@@ -1,0 +1,114 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    flex-direction: column;
+}
+
+.todoContainer {
+    width: 320px;
+    text-align: center;
+}
+
+#todoLogout {
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#todoLogout:hover {
+    background-color: #aa2835;
+}
+
+img {
+    display: flex;
+    text-align: center
+}
+
+#newTodo, .addTodo, .cancelTodo {
+    border-radius: 5px;
+    border: 2px solid #ccc;
+    margin: 10px 0;
+    padding: 2px 6px;
+}
+
+#newTodo {
+    width: 60%;
+}
+
+.addTodo {
+    color: #fff;
+    background-color: green;
+    cursor: pointer;
+}
+
+.cancelTodo {
+    color: #fff;
+    background-color: red;
+    cursor: pointer;
+}
+
+.addTodo:hover {
+    background-color: rgb(3, 87, 3);
+}
+
+.cancelTodo:hover {
+    background-color: rgb(148, 6, 6);
+}
+
+#todoList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    padding-left: 0;
+    margin-top: 10px;
+}
+
+#todoList input[type="text"], button {
+    border-radius: 5px;
+    border: 2px solid #ccc;
+    margin-left: 3px;
+}
+
+#todoList input[type="text"] {
+    width: 100%;
+}
+
+#todoList .todo-item {
+    display: flex;
+    align-items: center;
+    margin-left: 1px;
+    margin-right: 3px;
+}
+
+#todoList .todo-item button {
+    padding: 3px;
+    background-color: green;
+    color: white;
+    cursor: pointer;
+    margin-left: 6px;
+    padding: 2px 6px;
+}
+
+.todo-item button:last-child {
+    background-color: red !important; 
+}
+
+#todoList .todo-item span {
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+
+
+
+

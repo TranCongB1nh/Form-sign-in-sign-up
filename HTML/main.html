@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <link rel="stylesheet" href="/CSS/main.css">
+</head>
+<body>
+    <div class="todoContainer">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Microsoft_To-Do_icon.svg"
+          alt="Logo"
+          width="50"
+        />
+        <h1><strong>TODO</strong> add or update</h1>
+        <h2 id="welcomeMessage">Hello </h2>
+        <input id="newTodo" type="text">
+        <button class="addTodo" onclick="addTodo()"> Add </button>
+        <button class="cancelTodo" onclick="clearTodoInput()"> Cancel </button>
+
+        <div>
+            <label for="filter"> Filter: </label>
+            <select id="filter" onchange="filterTodos()">
+                <option value="all">All</option>
+                <option value="undone">Undone</option>
+                <option value="done">Done</option>
+            </select>
+        </div>
+        <ul id="todoList"> </ul>
+    </div>
+    <button id="todoLogout">Logout</button>
+    <script src="/Javascript/main.js"></script>
+</body>
+</html>
