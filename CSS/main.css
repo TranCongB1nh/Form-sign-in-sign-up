@@ -9,6 +9,11 @@ body {
     flex-direction: column;
 }
 
+img {
+    align-items: center;
+    width: 100%;
+}
+
 .todoContainer {
     width: 320px;
     text-align: center;

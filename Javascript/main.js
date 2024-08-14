@@ -2,18 +2,63 @@ let todos = []
 let welcomeMessage = document.getElementById("welcomeMessage")
 let todoLogout = document.getElementById('todoLogout')
 
-function checkLoggedIn() {
+// Hàm tải danh sách todos từ localStorage
+function loadTodos() {
     let user =
       localStorage.getItem("currentUser") ||
       sessionStorage.getItem("currentUser");
-    if (!user) {
-      window.location.href = "../HTML/main.html";
-    } else {
-      user = JSON.parse(user);
-      welcomeMessage.textContent = `Hello ${user.username}. You are logged in`;
+    if (user) {
+        user = JSON.parse(user);
+        const storedTodos = localStorage.getItem(`todos_${user.username}`);
+        if (storedTodos) {
+            todos = JSON.parse(storedTodos);
+        }
     }
 }
-checkLoggedIn()
+
+// Hàm lưu danh sách todos vào localStorage
+function saveTodos() {
+    let user =
+      localStorage.getItem("currentUser") ||
+      sessionStorage.getItem("currentUser");
+    if (user) {
+        user = JSON.parse(user);
+        localStorage.setItem(`todos_${user.username}`, JSON.stringify(todos));
+    }
+}
+
+window.onload = function () {
+    const localUser = localStorage.getItem('currentUser');
+    const sessionUser = sessionStorage.getItem('currentUser');
+    const currentWindow = window.location.href.split('/').pop();
+
+    // Nếu người dùng đã đăng nhập
+    if (localUser || sessionUser) {
+        if (currentWindow === 'signIn.html' || currentWindow === 'signUp.html') {
+            window.location.href = 'main.html';
+        }
+    } else {
+        // Nếu người dùng chưa đăng nhập, và họ đang ở trang main.html
+        if (currentWindow === 'main.html') {
+            window.location.href = 'signIn.html';
+        }
+    }
+}
+
+function checkLoggedIn() {
+    const user =
+      localStorage.getItem("currentUser") ||
+      sessionStorage.getItem("currentUser");
+    if (!user) {
+      window.location.href = "../HTML/signIn.html"; // Chuyển hướng đến signIn.html nếu không có người dùng
+    } else {
+      const parsedUser = JSON.parse(user);
+      welcomeMessage.textContent = `Hello ${parsedUser.username}. You are logged in`;
+      loadTodos(); // Tải todos khi đăng nhập
+      renderTodos();
+    }
+}
+checkLoggedIn();
 
 todoLogout.addEventListener("click", function () {
     localStorage.removeItem("currentUser");
@@ -36,6 +81,7 @@ function addTodo() {
     }
     todos.push(Todo)
     todoInput.value = ""
+    saveTodos(); // Lưu todos sau khi thêm
     renderTodos()
 }
 
@@ -46,6 +92,7 @@ function clearTodoInput() {
 
 function deleteTodo(id){
     todos = todos.filter(Todo => Todo.id !== id)
+    saveTodos(); // Lưu todos sau khi xoá
     renderTodos()
 }
 
@@ -61,6 +108,7 @@ function editTodoText(id){
         const newText = prompt('Edit todo:',todo.text)
         if (newText !== null){
             todo.text = newText
+            saveTodos(); // Lưu todos sau khi sửa
         }
     }
     renderTodos()
@@ -70,6 +118,7 @@ function toggleTodo(id, currentFilter) {
     for (let index in todos) {
         if (id === todos[index].id) {
             todos[index].isDone = !todos[index].isDone
+            saveTodos(); // Lưu todos sau khi chuyển trạng thái
         }
     }
     renderTodos(currentFilter)

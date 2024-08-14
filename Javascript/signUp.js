@@ -3,12 +3,12 @@ let signInButton = document.getElementById('signUpForm__signInButton')
 
 signUpForm.addEventListener('submit', function (e) {
     e.preventDefault()
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
-    let users = JSON.parse(localStorage.getItem('users')) || []
-    let userExist = users.some((user) => user.username = username)
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const users = JSON.parse(localStorage.getItem('users')) || []
+    const isUserExist = users.some((user) => user.username === username)
 
-    if (userExist) {
+    if (isUserExist) {
         alert('Username already exist')
     } else {
         users.push({ username: username, password: password })

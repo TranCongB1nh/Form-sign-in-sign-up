@@ -11,10 +11,8 @@ signInForm.addEventListener("submit" , function (e) {
 
     if (user) {
         if (rememberMeStatus) {
-            localStorage.setItem('rememberMeStatus', 'true');
             localStorage.setItem('currentUser', JSON.stringify(user));
         } else {
-            localStorage.setItem('rememberMeStatus', 'false');
             sessionStorage.setItem('currentUser', JSON.stringify(user));
         }
         window.location.href = '../HTML/main.html';
@@ -28,8 +26,8 @@ signUpButton.addEventListener('click', function (e) {
 }) 
 
 function checkRememberMeStatus() {
-    if (localStorage.getItem('rememberMeStatus') === 'true') {
-        window.location.href = '../HTML/main.html'
+    if (localStorage.getItem('currentUser')) {
+        window.location.href = '../HTML/main.html';
     }
 }
 checkRememberMeStatus()
