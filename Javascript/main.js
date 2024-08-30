@@ -1,30 +1,27 @@
-let todos = []
 let welcomeMessage = document.getElementById("welcomeMessage")
 let todoLogout = document.getElementById('todoLogout')
 
 // Hàm tải danh sách todos từ localStorage
 function loadTodos() {
-    let user =
-      localStorage.getItem("currentUser") ||
-      sessionStorage.getItem("currentUser");
-    if (user) {
-        user = JSON.parse(user);
-        const storedTodos = localStorage.getItem(`todos_${user.username}`);
-        if (storedTodos) {
-            todos = JSON.parse(storedTodos);
-        }
-    }
+    const username = localStorage.getItem('username');
+    const todos = JSON.parse(localStorage.getItem('todos_' + username)) || [];
+    return todos;
 }
 
 // Hàm lưu danh sách todos vào localStorage
-function saveTodos() {
-    let user =
-      localStorage.getItem("currentUser") ||
-      sessionStorage.getItem("currentUser");
+function saveTodos(todos) {
+    const db = JSON.parse(localStorage.getItem('db')) || { users: [] };
+    const username = localStorage.getItem('username');
+    let user = db.users.find(user => user.username === username);
+
     if (user) {
-        user = JSON.parse(user);
-        localStorage.setItem(`todos_${user.username}`, JSON.stringify(todos));
+        user.todos = todos;
+    } else {
+        db.users.push({ username: username, todos: todos });
     }
+
+    localStorage.setItem('db', JSON.stringify(db));
+    localStorage.setItem('todos_' + username, JSON.stringify(todos));
 }
 
 window.onload = function () {
@@ -46,16 +43,17 @@ window.onload = function () {
 }
 
 function checkLoggedIn() {
-    const user =
-      localStorage.getItem("currentUser") ||
-      sessionStorage.getItem("currentUser");
+    const user = localStorage.getItem("currentUser") || sessionStorage.getItem("currentUser");
     if (!user) {
-      window.location.href = "../HTML/signIn.html"; // Chuyển hướng đến signIn.html nếu không có người dùng
+        window.location.href = "../HTML/signIn.html";
     } else {
-      const parsedUser = JSON.parse(user);
-      welcomeMessage.textContent = `Hello ${parsedUser.username}. You are logged in`;
-      loadTodos(); // Tải todos khi đăng nhập
-      renderTodos();
+        const parsedUser = JSON.parse(user);
+        welcomeMessage.textContent = `Hello ${parsedUser.username}. You are logged in`;
+
+        localStorage.setItem('username', parsedUser.username);
+
+        loadTodos();
+        renderTodos();
     }
 }
 checkLoggedIn();
@@ -63,26 +61,30 @@ checkLoggedIn();
 todoLogout.addEventListener("click", function () {
     localStorage.removeItem("currentUser");
     sessionStorage.removeItem("currentUser");
+    localStorage.removeItem("username");
     localStorage.removeItem("rememberMeStatus");
     window.location.href = "../HTML/signIn.html";
 });
 
 function addTodo() {
-    const todoInput = document.getElementById("newTodo")
-    const text = todoInput.value
+    const todoInput = document.getElementById("newTodo");
+    const text = todoInput.value;
     if (text === "") {
-        return
+        return;
     }
+
+    let todos = loadTodos();
 
     const Todo = {
         id: Date.now(),
-        text: text,
-        isDone: false
-    }
-    todos.push(Todo)
-    todoInput.value = ""
-    saveTodos(); // Lưu todos sau khi thêm
-    renderTodos()
+        taskName: text,
+        isDone: false,
+        createdBy: localStorage.getItem('username')
+    };
+    todos.push(Todo);
+    todoInput.value = "";
+    saveTodos(todos);
+    renderTodos();
 }
 
 function clearTodoInput() {
@@ -91,9 +93,10 @@ function clearTodoInput() {
 }
 
 function deleteTodo(id){
-    todos = todos.filter(Todo => Todo.id !== id)
-    saveTodos(); // Lưu todos sau khi xoá
-    renderTodos()
+    let todos = loadTodos();
+    todos = todos.filter(Todo => Todo.id !== id);
+    saveTodos(todos);
+    renderTodos();
 }
 
 function filterTodos(){
@@ -103,36 +106,40 @@ function filterTodos(){
 }
 
 function editTodoText(id){
-    const todo = todos.find(todo => todo.id === id)
-    if (todo){
-        const newText = prompt('Edit todo:',todo.text)
-        if (newText !== null){
-            todo.text = newText
-            saveTodos(); // Lưu todos sau khi sửa
+    let todos = loadTodos();
+    const todo = todos.find(todo => todo.id === id);
+    if (todo) {
+        const newText = prompt('Edit todo:', todo.text);
+        if (newText !== null) {
+            todo.text = newText;
         }
     }
-    renderTodos()
+    saveTodos(todos);
+    renderTodos();
 }
 
 function toggleTodo(id, currentFilter) {
+    let todos = loadTodos();
     for (let index in todos) {
         if (id === todos[index].id) {
-            todos[index].isDone = !todos[index].isDone
-            saveTodos(); // Lưu todos sau khi chuyển trạng thái
+            todos[index].isDone = !todos[index].isDone;
         }
     }
-    renderTodos(currentFilter)
+    saveTodos(todos);
+    renderTodos(currentFilter);
 }
 
 function renderTodos(filter = 'all') {
     const todoList = document.getElementById('todoList');
     todoList.innerHTML = '';
 
+    let todos = loadTodos();
     let filteredTodos = todos;
+
     if (filter === 'done') {
-        filteredTodos = todos.filter(todo => todo.isDone)
+        filteredTodos = todos.filter(todo => todo.isDone);
     } else if (filter === 'undone') {
-        filteredTodos = todos.filter(todo => !todo.isDone)
+        filteredTodos = todos.filter(todo => !todo.isDone);
     }
 
     filteredTodos.forEach(todo => {
@@ -162,5 +169,5 @@ function renderTodos(filter = 'all') {
         todoItem.appendChild(editTodoBtn);
         todoItem.appendChild(deleteTodoBtn);
         todoList.appendChild(todoItem);
-    })
+    });
 }
