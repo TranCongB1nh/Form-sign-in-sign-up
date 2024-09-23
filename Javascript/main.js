@@ -1,14 +1,12 @@
 let welcomeMessage = document.getElementById("welcomeMessage")
 let todoLogout = document.getElementById('todoLogout')
 
-// Hàm tải danh sách todos từ localStorage
 function loadTodos() {
     const username = localStorage.getItem('username');
     const todos = JSON.parse(localStorage.getItem('todos_' + username)) || [];
     return todos;
 }
 
-// Hàm lưu danh sách todos vào localStorage
 function saveTodos(todos) {
     const db = JSON.parse(localStorage.getItem('db')) || { users: [] };
     const username = localStorage.getItem('username');
@@ -29,13 +27,11 @@ window.onload = function () {
     const sessionUser = sessionStorage.getItem('currentUser');
     const currentWindow = window.location.href.split('/').pop();
 
-    // Nếu người dùng đã đăng nhập
     if (localUser || sessionUser) {
         if (currentWindow === 'signIn.html' || currentWindow === 'signUp.html') {
             window.location.href = 'main.html';
         }
     } else {
-        // Nếu người dùng chưa đăng nhập, và họ đang ở trang main.html
         if (currentWindow === 'main.html') {
             window.location.href = 'signIn.html';
         }
@@ -153,7 +149,7 @@ function renderTodos(filter = 'all') {
 
         const text = document.createElement('input');
         text.type = 'text';
-        text.value = todo.text;
+        text.value = todo.taskName;  // Đổi từ todo.text thành todo.taskName
         text.readOnly = true;
 
         const editTodoBtn = document.createElement('button');
