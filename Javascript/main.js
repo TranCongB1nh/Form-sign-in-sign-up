@@ -3,24 +3,23 @@ let todoLogout = document.getElementById('todoLogout')
 
 function loadTodos() {
     const username = localStorage.getItem('username');
-    const todos = JSON.parse(localStorage.getItem('todos_' + username)) || [];
-    return todos;
+    const allTodos = JSON.parse(localStorage.getItem('todos')) || [];
+    const userTodos = allTodos.filter(todo => todo.createdBy === username);
+    return userTodos;
 }
 
-function saveTodos(todos) {
-    const db = JSON.parse(localStorage.getItem('db')) || { users: [] };
+
+function saveTodos(userTodos) {
     const username = localStorage.getItem('username');
-    let user = db.users.find(user => user.username === username);
+    let allTodos = JSON.parse(localStorage.getItem('todos')) || [];
 
-    if (user) {
-        user.todos = todos;
-    } else {
-        db.users.push({ username: username, todos: todos });
-    }
+    allTodos = allTodos.filter(todo => todo.createdBy !== username);
 
-    localStorage.setItem('db', JSON.stringify(db));
-    localStorage.setItem('todos_' + username, JSON.stringify(todos));
+    allTodos = allTodos.concat(userTodos);
+
+    localStorage.setItem('todos', JSON.stringify(allTodos));
 }
+
 
 window.onload = function () {
     const localUser = localStorage.getItem('currentUser');
@@ -79,9 +78,10 @@ function addTodo() {
     };
     todos.push(Todo);
     todoInput.value = "";
-    saveTodos(todos);
+    saveTodos(todos); 
     renderTodos();
 }
+
 
 function clearTodoInput() {
     const todoInput = document.getElementById("newTodo")
@@ -101,18 +101,19 @@ function filterTodos(){
     renderTodos(filterStatus)
 }
 
-function editTodoText(id){
+function editTodoText(id) {
     let todos = loadTodos();
     const todo = todos.find(todo => todo.id === id);
     if (todo) {
-        const newText = prompt('Edit todo:', todo.text);
-        if (newText !== null) {
-            todo.text = newText;
+        const newText = prompt('Edit todo:', todo.taskName);
+        if (newText !== null && newText.trim() !== "") {
+            todo.taskName = newText;
         }
     }
     saveTodos(todos);
     renderTodos();
 }
+
 
 function toggleTodo(id, currentFilter) {
     let todos = loadTodos();
@@ -129,7 +130,7 @@ function renderTodos(filter = 'all') {
     const todoList = document.getElementById('todoList');
     todoList.innerHTML = '';
 
-    let todos = loadTodos();
+    let todos = loadTodos(); 
     let filteredTodos = todos;
 
     if (filter === 'done') {
@@ -149,7 +150,7 @@ function renderTodos(filter = 'all') {
 
         const text = document.createElement('input');
         text.type = 'text';
-        text.value = todo.taskName;  // Đổi từ todo.text thành todo.taskName
+        text.value = todo.taskName;
         text.readOnly = true;
 
         const editTodoBtn = document.createElement('button');
@@ -167,3 +168,4 @@ function renderTodos(filter = 'all') {
         todoList.appendChild(todoItem);
     });
 }
+
